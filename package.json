@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "pm2ProdFork": "pm2 start index.js --name='ServerPM2fork' --watch",
-    "pm2ProdCluster": "pm2 start index.js -i --name='ServerPM2cluster' --watch"
+    "pm2ProdFork": "pm2 start index.js --name='ServerPM2fork' --watch --node-args='port=8081'",
+    "pm2ProdCluster": "pm2 start index.js -i --name='ServerPM2cluster' --watch --node_args=' --port=8082'"
   },
   "keywords": [],
   "author": "",

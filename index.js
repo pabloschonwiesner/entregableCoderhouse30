@@ -7,7 +7,6 @@ require('dotenv').config()
 const MongoStore = require('connect-mongo')
 const mongoose = require('mongoose')
 const Usuario = require('./models/usuario.model')
-// const { fork } = require('child_process')
 const numCPUs = require('os').cpus().length
 
 const UsuarioServicio = require('./services/usuario.service')
@@ -17,7 +16,10 @@ const usuarioServicio = new UsuarioServicio()
 
 let facebookId, facebookSecret, port, arrObj = []
 
+console.log(process.argv)
+
 process.argv.forEach( arg => {
+  console.log(arg)
   let arrArg = arg.split('=')
   arrObj.push({ clave: arrArg[0], valor: arrArg[1]})
 })
@@ -153,17 +155,20 @@ app.get('/info', (req, res) => {
 
 app.get('/random', (req, res) => {
   let cantidad = req.query.cant
+  let resultado = {}
 
   if(!cantidad || cantidad <= 0) {
     cantidad = 500000000
   }
-  const forked = fork('randomFork.js')
-  
-  forked.on('message', resultado => {
-    return res.status(200).json(resultado)    
-  })
-  
-  forked.send({cantidad})  
+  for(let i = 0; i < cantidad.cantidad; i++) {
+    let valor = Math.floor(Math.random() * 1000) +1
+
+    if(!resultado || !resultado.hasOwnProperty(valor)) {
+      resultado[valor] = 0
+    }
+    resultado[valor]++
+  }
+  return res.status(200).json(resultado) 
 })
 
 
@@ -171,11 +176,6 @@ app.get('/random', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Escuchando el puerto ${port}`)
-  mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
-  if(err) console.log(err);
-  
-  console.log('Base de datos ONLINE');
-});
 })
 app.on('error', (err) => { console.log(`Error de conexion: ${err}`)})
 
